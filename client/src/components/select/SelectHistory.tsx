@@ -3,7 +3,8 @@ import { histEntry } from "./Select";
 import {getTable} from "../../mockedData"
 import { Bar } from "react-chartjs-2";
 import "chart.js/auto";
-import React from "react";
+import React, { useEffect } from "react";
+import { Dispatch, SetStateAction, useState } from "react";
 
 /**
  * A interface for the props that are passed into SelectHistory.
@@ -14,7 +15,9 @@ import React from "react";
  */
 interface SelectHistoryProps {
   history: string;
-  mode: string
+  setHistory: Dispatch<SetStateAction<string>>;
+  mode: string;
+  setMode: Dispatch<SetStateAction<string>>;
 }
 
 function generateRandomRGBA(): string {
@@ -27,7 +30,6 @@ function generateRandomRGBA(): string {
   return `rgba(${r}, ${g}, ${b}, ${a})`;
 }
 
-
 /**
  * Builds a SelectHistory component that displays the output area according
  *  to any commands inputted by the user.
@@ -35,11 +37,9 @@ function generateRandomRGBA(): string {
  * @param props the history entries (see SelectHistoryProps for more details)
  * @returns JSX that will print a tabular view of the passed in data
  */
-export function SelectHistory(props: SelectHistoryProps) {
+export async function SelectHistory(props: SelectHistoryProps) {
   const key= props.history;
   const mode=props.mode;
-  const table = getTable(key);
-  if (!table) {
     // If selected is the empty one, tell user to select
     if (props.history == "Select a file"){
       return (
@@ -50,20 +50,26 @@ export function SelectHistory(props: SelectHistoryProps) {
         }}>Please choose one of the tables in the dropdown menu to display it.</div>
       );
     }
+    if (mode == "Select display mode") {
+      return (
+        <div
+          style={{
+            wordWrap: "break-word",
+            whiteSpace: "normal",
+            overflowWrap: "break-word",
+          }}
+        >
+          Please choose a display mode.
+        </div>
+      );
+    }
+    useEffect(() => {
+
+    }, []);
+    const table = await getTable(key);
     // If table is undefined or null, render a message or empty state
+    if (table[0][0] )
     return <div>No data available for the selected table.</div>;
-  }
-  if (mode == "Select display mode") {
-    return (
-      <div style={{
-          wordWrap: 'break-word',
-          whiteSpace: 'normal',
-          overflowWrap: 'break-word'
-        }}>
-        Please choose a display mode.
-      </div>
-    );
-  }
   if (mode == "Table"){
     return (
       <div className="table" style={{ overflowY: 'auto', width: '80%', margin: 'auto' , overflowX: 'auto'}}>

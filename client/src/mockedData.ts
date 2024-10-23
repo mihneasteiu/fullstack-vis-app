@@ -1,3 +1,4 @@
+import { ListenOptions } from "net";
 
 // Define a Map where keys are strings and values are 2D arrays of numbers
 const map = new Map<string, string[][]>();
@@ -63,9 +64,23 @@ map.set("RI Income by Race", [
   ["Black", "2020", "2020", "100375", "20176", "Kent County, RI", "05000US44003", "kent-county-ri"],
   ["Black", "2020", "2020", "46622", "14559", "Newport County, RI", "05000US44005", "newport-county-ri"],
   ["Black", "2020", "2020", "46084", "3384", "Providence County, RI", "05000US44007", "providence-county-ri"],
-  ["Black", "2020", "2020", "45849", "6614", "Washington County, RI", "05000US44009", "washington-county-ri"]])
+  ["Black", "2020", "2020", "45849", "6614", "Washington County, RI", "05000US44009", "washington-county-ri"]]);
 
-export function getTable(label:string) {
-    const matrixA = map.get(label);
-    return matrixA;
+export async function getTable(label:string): Promise<string[][]> {
+    try {
+      const loadResponse = await fetch(
+        "http://localhost:3232/load?filename=" + label + "&hasheaders=false"
+      );
+      const loadJson = await loadResponse.json();
+
+      const result: string = loadJson.result;
+
+      if (result == "error") {
+        return [["error", "File " + label + " not found"]];
+      }
+      const data: string[][] = loadJson.data;
+      return data;
+    } catch (error) {
+      return [["error", "Error in fetch"]];
+    }
 }
