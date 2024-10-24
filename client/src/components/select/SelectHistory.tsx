@@ -66,7 +66,11 @@ export function SelectHistory(props: SelectHistoryProps) {
   }
   if (mode == "Table"){
     return (
-      <div className="table" style={{ overflowY: 'auto', width: '80%', margin: 'auto' , overflowX: 'auto'}}>
+    <div>
+    <div aria-live="polite" className="sr-only">
+      {`Displaying table with ${table.length - 1} rows and ${table[0].length} columns`}
+    </div>
+      <div className="table" aria-label="data table" style={{ overflowY: 'auto', width: '80%', margin: 'auto' , overflowX: 'auto'}}>
         <table border={1} style={{ borderCollapse: 'collapse', width: '100%' }}>
           <thead>
             <tr>
@@ -91,6 +95,7 @@ export function SelectHistory(props: SelectHistoryProps) {
             ))}
           </tbody>
         </table>
+      </div>
       </div>
     );
   }
@@ -201,10 +206,14 @@ if (mode === "Vertical Bar Chart") {
 
 let message = <div></div>;
 if (allHeadersInvalid) {
-  message = <div>Selected dataset contains no numerical Y values.</div>;
+  message = (
+    <div role="alert" aria-live="assertive">
+      Selected dataset contains no numerical Y values.
+    </div>
+  );
 } else if (invalidHeaders.length !== 0) {
   message = (
-    <div>
+    <div role="alert" aria-live="assertive">
       Couldn't parse the following headers: {invalidHeaders.join(", ")}
     </div>
   );
@@ -213,7 +222,7 @@ if (allHeadersInvalid) {
 return (
   <div style={{ height: '100vh', width: '100%', overflowX: 'scroll' }}> {/* Enable horizontal scrolling */}
     {message}
-    {!allHeadersInvalid && <Bar options={options} data={data} />}
+    {!allHeadersInvalid && <Bar aria-label="bar chart displaying" options={options} data={data} />}
   </div>
 );
 
