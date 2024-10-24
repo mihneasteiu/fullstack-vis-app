@@ -69,18 +69,19 @@ map.set("RI Income by Race", [
 export async function getTable(label:string): Promise<string[][]> {
     try {
       const loadResponse = await fetch(
-        "http://localhost:3232/load?filename=" + label + "&hasheaders=false"
+        "http://localhost:3232/getData?filepath=" + label
       );
       const loadJson = await loadResponse.json();
 
       const result: string = loadJson.result;
 
       if (result == "error") {
-        return [["error", "File " + label + " not found"]];
+        throw new Error("File " + label + " not found");
       }
-      const data: string[][] = loadJson.data;
+
+      const data: string[][] = loadJson.content;
       return data;
     } catch (error) {
-      return [["error", "Error in fetch"]];
+      throw new Error("Error in fetch");
     }
 }

@@ -52,9 +52,7 @@ export function Select() {
         <div className="select-container" aria-lable="Select container">
           <SelectHistory
             history={history}
-            setHistory={setHistory}
             mode={mode}
-            setMode={setMode}
           />
         </div>
       </div>
