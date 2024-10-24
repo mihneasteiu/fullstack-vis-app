@@ -1,0 +1,38 @@
+/* For controlling appearance of the mock app (such as headers) */
+@media screen and (max-width: 360px) {
+  .App {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    padding-top: 100px;
+  }
+  
+}
+
+.App-header {
+  background: linear-gradient(45deg, rgb(255, 0, 144), purple, violet, cyan);
+  background-size: 300% 300%;
+  animation: rainbowBackground 3.5s infinite; 
+  min-height: 8vh;
+  width: 100%; 
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(1px + 2vmin);
+  color: white;
+  border-radius: 10px;
+}
+
+@media screen and (min-width: 361px) {
+    .App {
+      text-align: center;
+    } 
+}
+
+@keyframes rainbowBackground {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
