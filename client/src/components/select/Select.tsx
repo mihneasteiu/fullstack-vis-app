@@ -42,10 +42,18 @@ export function Select() {
 
   return (
     <div className="min-h-[95vh] relative">
-      <div className="w-full" style={{ width: "100%"}}>
-      <SelectInput history={history} setHistory={setHistory}  mode={mode} setMode={setMode}/>
+      <div className="w-full" style={{ width: "100%" }}>
+        <SelectInput
+          history={history}
+          setHistory={setHistory}
+          mode={mode}
+          setMode={setMode}
+        />
         <div className="select-container" aria-lable="Select container">
-            <SelectHistory history={history} mode={mode}/>
+          <SelectHistory
+            history={history}
+            mode={mode}
+          />
         </div>
       </div>
     </div>

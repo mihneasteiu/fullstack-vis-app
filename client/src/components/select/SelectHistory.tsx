@@ -1,9 +1,12 @@
 import "../../styles/main.css";
 import { histEntry } from "./Select";
-import {getTable} from "../../mockedData"
+import { getTable } from "../../mockedData";
 import { Bar } from "react-chartjs-2";
 import "chart.js/auto";
-import React from "react";
+import React, { useEffect } from "react";
+import { Dispatch, SetStateAction, useState } from "react";
+import { Table } from "./Table";
+import { BarChart } from "./BarChart";
 
 /**
  * A interface for the props that are passed into SelectHistory.
@@ -14,19 +17,8 @@ import React from "react";
  */
 interface SelectHistoryProps {
   history: string;
-  mode: string
+  mode: string;
 }
-
-function generateRandomRGBA(): string {
-  const r = Math.floor(128 + Math.random() * 128);
-  const g = Math.floor(128 + Math.random() * 128);
-  const b = Math.floor(128 + Math.random() * 128);
-  
-  const a = (0.7 + Math.random() * 0.3).toFixed(2); // Alpha between 0.70 and 1.00
-
-  return `rgba(${r}, ${g}, ${b}, ${a})`;
-}
-
 
 /**
  * Builds a SelectHistory component that displays the output area according
@@ -36,81 +28,75 @@ function generateRandomRGBA(): string {
  * @returns JSX that will print a tabular view of the passed in data
  */
 export function SelectHistory(props: SelectHistoryProps) {
-  const key= props.history;
-  const mode=props.mode;
-  const table = getTable(key);
-  if (!table) {
-    // If selected is the empty one, tell user to select
-    if (props.history == "Select a file"){
-      return (
-        <div style={{ 
-          wordWrap: 'break-word', 
-          whiteSpace: 'normal', 
-          overflowWrap: 'break-word' 
-        }}>Please choose one of the tables in the dropdown menu to display it.</div>
-      );
+  const history = props.history;
+  const mode = props.mode;
+  const [table, setTable] = useState<string[][] | null>(null);
+  const [loading, setLoading] = useState<boolean | null>(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (history !== "Select a file" && mode !== "Select display mode") {
+      const fetchTable = async () => {
+        setLoading(true);
+        setError(null);
+        try {
+          const fetchedTable = await getTable(history);
+          setTable(fetchedTable);
+        } catch (error) {
+          if (error instanceof Error) {
+            setError(error.message);
+          } else {
+            setError("Error in fetch");
+          }
+        } finally {
+          setLoading(false);
+        }
+      };
+      fetchTable();
     }
-    // If table is undefined or null, render a message or empty state
-    return <div>No data available for the selected table.</div>;
+  }, [history, mode]);
+  // If selected is the empty one, tell user to select
+  if (props.history == "Select a file") {
+    return (
+      <div
+        style={{
+          wordWrap: "break-word",
+          whiteSpace: "normal",
+          overflowWrap: "break-word",
+        }}
+      >
+        Please choose one of the tables in the dropdown menu to display it.
+      </div>
+    );
   }
   if (mode == "Select display mode") {
     return (
-      <div style={{
-          wordWrap: 'break-word',
-          whiteSpace: 'normal',
-          overflowWrap: 'break-word'
-        }}>
+      <div
+        style={{
+          wordWrap: "break-word",
+          whiteSpace: "normal",
+          overflowWrap: "break-word",
+        }}
+      >
         Please choose a display mode.
       </div>
-    );
-  }
-  if (mode == "Table"){
-    return (
-    <div>
-    <div aria-live="polite" className="sr-only">
-      {`Displaying table with ${table.length - 1} rows and ${table[0].length} columns`}
-    </div>
-      <div className="table" aria-label="data table" style={{ overflowY: 'auto', width: '80%', margin: 'auto' , overflowX: 'auto'}}>
-        <table border={1} style={{ borderCollapse: 'collapse', width: '100%' }}>
-          <thead>
-            <tr>
-              {table[0].map((header, index) => (
-                <th key={index} style={{ 
-                  position: 'sticky', 
-                  top: 0, 
-                  backgroundColor: 'grey', 
-                  zIndex: 1,
-                  minWidth: '150px'
-                }}>{header}</th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {table.slice(1).map((row, rowIndex) => (
-              <tr key={rowIndex}>
-                {row.map((cell, cellIndex) => (
-                  <td key={cellIndex}>{cell}</td>
-                ))}
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
       </div>
     );
   }
-const labels = table.slice(1).map(row => row[0]);
-const headers = table[0].slice(1);
-const invalidHeaders:string[] = [];
-let allHeadersInvalid = true;
-let datasets = headers.map((header, colIndex) => {
-  const data = table.slice(1).map(row => parseFloat(row[colIndex + 1]));
-  
-  if (data.some(value => isNaN(value))) {
-    invalidHeaders.push(header);
-  } else {
-    allHeadersInvalid = false;
+  if (loading) {
+    return <div>Data is loading...</div>;
   }
+  if (error) {
+    return <div>{error}</div>;
+  }
+  if (table) {
+    if (mode == "Table") {
+      return <Table table={table} />;
+    }
+    return <BarChart data={table} isStacked={mode === "Stacked Bar Chart"} />;
+  }
+  return null;
+}
 
   const color = generateRandomRGBA();
   
