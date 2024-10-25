@@ -80,6 +80,7 @@ export function SelectHistory(props: SelectHistoryProps) {
       >
         Please choose a display mode.
       </div>
+      </div>
     );
   }
   if (loading) {
@@ -95,4 +96,120 @@ export function SelectHistory(props: SelectHistoryProps) {
     return <BarChart data={table} isStacked={mode === "Stacked Bar Chart"} />;
   }
   return null;
+}
+
+  const color = generateRandomRGBA();
+  
+  return {
+    label: header,
+    data: data,
+    backgroundColor: color, 
+    borderColor: color,
+    borderWidth: 1
+  };
+});
+
+datasets = datasets.filter(dataset => !dataset.data.some(value => isNaN(value)));
+
+const data = {
+  labels,
+  datasets
+};
+
+let options;
+if (mode === "Vertical Bar Chart") {
+  options = {
+    plugins: {
+      legend: {
+        display: true,
+        labels: {
+          font: {
+            size: 10 // Smaller font for legends
+          }
+        }
+      },
+    },
+    responsive: true,
+    maintainAspectRatio: false, // Allows height to grow with container
+    scales: {
+      x: {
+        stacked: false,
+        beginAtZero: true,
+        ticks: {
+          maxRotation: 90,
+          minRotation: 90
+        },
+        grid: {
+          display: false,
+        },
+        // Enable scrolling on the x-axis
+        min: 0,
+        
+      },
+      y: {
+        stacked: false,
+        beginAtZero: true,
+        ticks: {
+          stepSize: 10 // Customize this for a larger y-axis
+        }
+      },
+    },
+  };
+} else if (mode === "Stacked Bar Chart") {
+  options = {
+    plugins: {
+      legend: {
+        display: true,
+        labels: {
+          font: {
+            size: 10 // Smaller font for legends
+          }
+        }
+      },
+    },
+    responsive: true,
+    maintainAspectRatio: false, // Allows height to grow with container
+    scales: {
+      x: {
+        stacked: true,
+        beginAtZero: true,
+        grid: {
+          display: false,
+        },
+        // Enable scrolling on the x-axis
+        min: 0,
+      },
+      y: {
+        stacked: true,
+        beginAtZero: true,
+        ticks: {
+          stepSize: 10 // Customize this for a larger y-axis
+        }
+      },
+    },
+  };
+}
+
+let message = <div></div>;
+if (allHeadersInvalid) {
+  message = (
+    <div role="alert" aria-live="assertive">
+      Selected dataset contains no numerical Y values.
+    </div>
+  );
+} else if (invalidHeaders.length !== 0) {
+  message = (
+    <div role="alert" aria-live="assertive">
+      Couldn't parse the following headers: {invalidHeaders.join(", ")}
+    </div>
+  );
+}
+
+return (
+  <div style={{ height: '100vh', width: '100%', overflowX: 'scroll' }}> {/* Enable horizontal scrolling */}
+    {message}
+    {!allHeadersInvalid && <Bar aria-label="bar chart displaying" options={options} data={data} />}
+  </div>
+);
+
 }

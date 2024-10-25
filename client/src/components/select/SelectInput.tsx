@@ -1,15 +1,8 @@
-import { Dispatch, SetStateAction, useState } from "react";
+import { Dispatch, SetStateAction, useState, KeyboardEvent } from "react";
 import "../../styles/main.css";
 import { histEntry } from "./Select";
 import React from "react";
 
-/**
- * A interface for SelectInput.
- *
- * @params
- * history: the array storing all previous history entries
- * setHistory: function to add new history entry to history array
- */
 interface SelectInputProps {
   history: string;
   setHistory: Dispatch<SetStateAction<string>>;
@@ -18,27 +11,36 @@ interface SelectInputProps {
 }
 
 export function SelectInput(props: SelectInputProps) {
-  // SOLUTION FUNCTION:
-  /**
-   * Function that is called when a user click the submit button to display a new output
-   *
-   * @param file the file selected by the user
-   */
-
   function handleSubmit(text: string, mode: string) {
-    let newEntry=text;
-    let newMode=mode;
-    props.setHistory(newEntry);
-    props.setMode(newMode);
+    props.setHistory(text);
+    props.setMode(mode);
   }
 
+  // Handle keyboard interaction for the button
+  const handleKeyDown = (e: KeyboardEvent<HTMLButtonElement>) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault(); // Prevent space from scrolling
+      const selectElement = document.getElementById("dropdown") as HTMLSelectElement | null;
+      const selectMode = document.getElementById("dropdownVisOption") as HTMLSelectElement | null;
+      const selectText = selectElement?.options[selectElement.selectedIndex]?.text;
+      const selectDisplay = selectMode?.options[selectMode.selectedIndex]?.text;
+      if (selectText != null && selectDisplay != null) {
+        handleSubmit(selectText, selectDisplay);
+      }
+    }
+  };
+
   return (
-    <div className="dropdown-container">
+    <div 
+      className="dropdown-container"
+      role="region"
+      aria-label="Data selection controls"
+    >
       <select
         className="dropdown"
         name="dropdown"
         id="dropdown"
-        aria-label="dropdown"
+        aria-label="Select a data file"
       >
         <option>Select a file</option>
         <option>nbaplayers.csv</option>
@@ -48,11 +50,12 @@ export function SelectInput(props: SelectInputProps) {
         <option>RI Income by Race</option>
         <option>just text</option>
       </select>
+
       <select
         className="dropdownVisOption"
         name="dropdownVisOption"
         id="dropdownVisOption"
-        aria-label="dropdownVisOption"
+        aria-label="Select display mode"
       >
         <option>Select display mode</option>
         <option>Table</option>
@@ -62,24 +65,24 @@ export function SelectInput(props: SelectInputProps) {
 
       <button
         onClick={() => {
-          const selectElement = document.getElementById(
-            "dropdown"
-          ) as HTMLSelectElement | null;
-          const selectMode = document.getElementById(
-            "dropdownVisOption"
-          ) as HTMLSelectElement | null;
-          const selectText =
-            selectElement?.options[selectElement.selectedIndex]?.text;
-          const selectDisplay =
-            selectMode?.options[selectMode.selectedIndex]?.text;
+          const selectElement = document.getElementById("dropdown") as HTMLSelectElement | null;
+          const selectMode = document.getElementById("dropdownVisOption") as HTMLSelectElement | null;
+          const selectText = selectElement?.options[selectElement.selectedIndex]?.text;
+          const selectDisplay = selectMode?.options[selectMode.selectedIndex]?.text;
           if (selectText != null && selectDisplay != null) {
             handleSubmit(selectText, selectDisplay);
           }
         }}
-        aria-label="retrieve"
+        onKeyDown={handleKeyDown}
+        aria-label="Retrieve selected data"
       >
         Retrieve
       </button>
+
+      {/* Instructions for screen reader users */}
+      <div className="sr-only" aria-live="polite">
+        Use Tab to move between controls, arrow keys to change options, and Enter to select
+      </div>
     </div>
   );
 }

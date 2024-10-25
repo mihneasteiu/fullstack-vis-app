@@ -7,6 +7,7 @@ import edu.brown.cs.student.main.ACSApi.datasource.BroadbandData;
 import edu.brown.cs.student.main.ACSApi.datasource.CachedACSApi;
 import edu.brown.cs.student.main.ACSApi.datasource.MockACS;
 import edu.brown.cs.student.main.server.BroadbandHandler;
+import edu.brown.cs.student.main.server.GetDataHandler;
 import edu.brown.cs.student.main.server.LoadHandler;
 import edu.brown.cs.student.main.server.SearchHandler;
 import edu.brown.cs.student.main.server.SuccessResponse;
@@ -56,6 +57,7 @@ public class TestAPIServer {
     Spark.get("loadcsv", new LoadHandler(state));
     Spark.get("searchcsv", new SearchHandler(state));
     Spark.get("broadband", new BroadbandHandler(new MockACS()));
+    Spark.get("getData", new GetDataHandler());
     Spark.init();
     Spark.awaitInitialization();
   }
@@ -281,6 +283,38 @@ public class TestAPIServer {
     assertEquals(response.get("result"), "error_bad_request");
     assertEquals(response.get("message"), "county parameter is missing or empty");
     connection.disconnect();
+  }
+
+  @Test
+  public void testGetDataHandler() throws IOException {
+    HttpURLConnection connection = tryRequest("getData?filepath=persons/people.csv");
+    assertEquals(200, connection.getResponseCode());
+    Map<String, Object> response = deserializeMapFromConnection(connection);
+    List<List<String>> expected =
+        List.of(
+            List.of("Colin", "19", "Student"),
+            List.of("Thao", "52", "Doctor"),
+            List.of("Fred", "55", "Doctor"),
+            List.of("Derick", "21", "Student"),
+            List.of("Ryan", "17", "Student"),
+            List.of("Ba", "76", "Retired"));
+    assertEquals(response.get("result"), "success");
+    assertEquals(response.get("content"), expected);
+    connection.disconnect();
+  }
+
+  @Test
+  public void testGetDataHandlerExceptions() throws IOException{
+    HttpURLConnection connection = tryRequest("getData?filepath=persons/peopl.csv");
+    assertEquals(404, connection.getResponseCode());
+    Map<String, String> response = deserializeMapFromError(connection);
+    assertEquals(response.get("message"), "File not found: data/persons/peopl.csv (No such file or directory)");
+    connection.disconnect();
+
+    connection = tryRequest("getData?");
+    assertEquals(400, connection.getResponseCode());
+    response = deserializeMapFromError(connection);
+    assertEquals(response.get("message"), "Filepath parameter is missing or empty");
   }
 
   /**
