@@ -4,7 +4,6 @@ import static edu.brown.cs.student.main.JsonSerializer.JsonSerializer.fromJson;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import edu.brown.cs.student.main.ACSApi.datasource.BroadbandData;
-import edu.brown.cs.student.main.ACSApi.datasource.CachedACSApi;
 import edu.brown.cs.student.main.ACSApi.datasource.MockACS;
 import edu.brown.cs.student.main.server.BroadbandHandler;
 import edu.brown.cs.student.main.server.GetDataHandler;
@@ -19,11 +18,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import okio.Buffer;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import spark.Spark;
@@ -40,18 +36,15 @@ import spark.Spark;
  */
 public class TestAPIServer {
 
-  @BeforeAll
-  public static void setup_before_everything() {
-    Spark.port(0);
-    Logger.getLogger("").setLevel(Level.WARNING);
-  }
-
   /** Shared state for all tests. */
   final ConcurrentHashMap<String, Object> state = new ConcurrentHashMap<String, Object>();
 
   @BeforeEach
   public void setup() {
     this.state.clear();
+    Spark.stop();
+    Spark.awaitStop();
+    Spark.port(0);
 
     Spark.get("viewcsv", new ViewHandler(state));
     Spark.get("loadcsv", new LoadHandler(state));
@@ -68,6 +61,7 @@ public class TestAPIServer {
     Spark.unmap("loadcsv");
     Spark.unmap("searchcsv");
     Spark.unmap("broadband");
+    Spark.unmap("getData");
     Spark.awaitStop();
   }
 
@@ -207,7 +201,8 @@ public class TestAPIServer {
   }
 
   /**
-   * Tests search behavior for complicated search, edge cases like multiple loads, wrong column match.
+   * Tests search behavior for complicated search, edge cases like multiple loads, wrong column
+   * match.
    *
    * @throws IOException
    */
@@ -265,7 +260,8 @@ public class TestAPIServer {
     assertEquals(200, connection.getResponseCode());
     BroadbandData response = SuccessResponse.getDataFromConnection(connection, BroadbandData.class);
     BroadbandData expected =
-        new BroadbandData(75.30000305175781, "Michigan", "Kent", LocalDateTime.of(2018, 6, 14, 10, 30, 0));
+        new BroadbandData(
+            75.30000305175781, "Michigan", "Kent", LocalDateTime.of(2018, 6, 14, 10, 30, 0));
     assertEquals(response, expected);
     connection.disconnect();
   }
@@ -292,6 +288,7 @@ public class TestAPIServer {
     Map<String, Object> response = deserializeMapFromConnection(connection);
     List<List<String>> expected =
         List.of(
+            List.of("Name", "Age", "Occupation"),
             List.of("Colin", "19", "Student"),
             List.of("Thao", "52", "Doctor"),
             List.of("Fred", "55", "Doctor"),
@@ -304,11 +301,13 @@ public class TestAPIServer {
   }
 
   @Test
-  public void testGetDataHandlerExceptions() throws IOException{
+  public void testGetDataHandlerExceptions() throws IOException {
     HttpURLConnection connection = tryRequest("getData?filepath=persons/peopl.csv");
     assertEquals(404, connection.getResponseCode());
     Map<String, String> response = deserializeMapFromError(connection);
-    assertEquals(response.get("message"), "File not found: data/persons/peopl.csv (No such file or directory)");
+    assertEquals(
+        response.get("message"),
+        "File not found: data/persons/peopl.csv (No such file or directory)");
     connection.disconnect();
 
     connection = tryRequest("getData?");

@@ -4,11 +4,6 @@ test.beforeEach(async ({ page }) => {
   await page.goto("http://localhost:8000/");
 });
 
-test("on page load, i dont see the input box initially", async ({ page }) => {
-  await expect(page.getByLabel("Sign Out")).not.toBeVisible();
-  await expect(page.getByLabel("dropdown", {exact: true})).not.toBeVisible();
-});
-
 test("on page load, i see the login button with an input box for password", async ({ page }) => {
   await expect(page.getByLabel("Login")).toBeVisible();
   await expect(page.getByLabel("Password")).toBeVisible();

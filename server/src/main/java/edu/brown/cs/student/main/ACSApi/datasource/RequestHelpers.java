@@ -1,6 +1,4 @@
-/**
- * This package contains classes related to the ACS (American Community Survey) API data source.
- */
+/** This package contains classes related to the ACS (American Community Survey) API data source. */
 package edu.brown.cs.student.main.ACSApi.datasource;
 
 import java.io.IOException;
@@ -9,15 +7,15 @@ import java.net.URL;
 import spark.Spark;
 
 /**
- * Utility class providing helper methods for making HTTP requests.
- * This class contains static methods to create and connect to HTTP URL connections
- * for both local (Spark) and public API calls.
+ * Utility class providing helper methods for making HTTP requests. This class contains static
+ * methods to create and connect to HTTP URL connections for both local (Spark) and public API
+ * calls.
  */
 public class RequestHelpers {
 
   /**
-   * Creates and connects to an HTTP URL connection for a given local API call.
-   * This method is designed to work with Spark's local server.
+   * Creates and connects to an HTTP URL connection for a given local API call. This method is
+   * designed to work with Spark's local server.
    *
    * @param apiCall The API endpoint to call, without the base URL or port number.
    * @return An HttpURLConnection object connected to the specified API endpoint.
@@ -32,8 +30,8 @@ public class RequestHelpers {
   }
 
   /**
-   * Creates and connects to an HTTP URL connection for a given public API call.
-   * This method is designed to work with external API endpoints.
+   * Creates and connects to an HTTP URL connection for a given public API call. This method is
+   * designed to work with external API endpoints.
    *
    * @param apiCall The complete URL of the API endpoint to call.
    * @return An HttpURLConnection object connected to the specified API endpoint.

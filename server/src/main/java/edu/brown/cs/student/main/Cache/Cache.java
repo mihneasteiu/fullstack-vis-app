@@ -1,6 +1,4 @@
-/**
- * This package contains classes related to caching mechanisms.
- */
+/** This package contains classes related to caching mechanisms. */
 package edu.brown.cs.student.main.Cache;
 
 import java.util.Optional;
@@ -22,10 +20,12 @@ public interface Cache<K, V> {
   void set(K key, V value);
 
   /**
-   * Returns the value to which the specified key is mapped, or an empty Optional if this cache contains no mapping for the key.
+   * Returns the value to which the specified key is mapped, or an empty Optional if this cache
+   * contains no mapping for the key.
    *
    * @param key The key whose associated value is to be returned.
-   * @return An Optional containing the value to which the specified key is mapped, or an empty Optional if this cache contains no mapping for the key.
+   * @return An Optional containing the value to which the specified key is mapped, or an empty
+   *     Optional if this cache contains no mapping for the key.
    */
   Optional<V> get(K key);
 

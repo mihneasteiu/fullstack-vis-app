@@ -1,13 +1,11 @@
-/**
- * This package contains classes related to the ACS (American Community Survey) API data source.
- */
+/** This package contains classes related to the ACS (American Community Survey) API data source. */
 package edu.brown.cs.student.main.ACSApi.datasource;
 
 import java.util.Objects;
 
 /**
- * Represents a composite key for a state and county combination.
- * This class is used as a key in collections where state and county pairs need to be uniquely identified.
+ * Represents a composite key for a state and county combination. This class is used as a key in
+ * collections where state and county pairs need to be uniquely identified.
  */
 public class StateCountyKey {
   /** The state name. */
@@ -19,7 +17,7 @@ public class StateCountyKey {
   /**
    * Constructs a new StateCountyKey with the specified state and county.
    *
-   * @param state  The name of the state.
+   * @param state The name of the state.
    * @param county The name of the county.
    */
   public StateCountyKey(String state, String county) {
@@ -28,8 +26,8 @@ public class StateCountyKey {
   }
 
   /**
-   * Compares this StateCountyKey to another object for equality.
-   * Two StateCountyKey objects are considered equal if they have the same state and county values.
+   * Compares this StateCountyKey to another object for equality. Two StateCountyKey objects are
+   * considered equal if they have the same state and county values.
    *
    * @param o The object to compare with this StateCountyKey.
    * @return true if the objects are equal, false otherwise.
@@ -43,8 +41,8 @@ public class StateCountyKey {
   }
 
   /**
-   * Generates a hash code for this StateCountyKey.
-   * The hash code is based on both the state and county values.
+   * Generates a hash code for this StateCountyKey. The hash code is based on both the state and
+   * county values.
    *
    * @return A hash code value for this object.
    */
@@ -60,9 +58,6 @@ public class StateCountyKey {
    */
   @Override
   public String toString() {
-    return "StateCountyKey{" +
-        "state='" + state + '\'' +
-        ", county='" + county + '\'' +
-        '}';
+    return "StateCountyKey{" + "state='" + state + '\'' + ", county='" + county + '\'' + '}';
   }
 }

@@ -1,7 +1,5 @@
 package edu.brown.cs.student.main.Cache;
 
-import edu.brown.cs.student.main.Cache.LinkedListNode;
-
 /**
  * Represents a doubly linked list data structure.
  *
@@ -11,9 +9,7 @@ public class DoublyLinkedList<T> {
   private LinkedListNode<T> head;
   private LinkedListNode<T> tail;
 
-  /**
-   * Constructs an empty DoublyLinkedList.
-   */
+  /** Constructs an empty DoublyLinkedList. */
   public DoublyLinkedList() {
     head = new LinkedListNode<>(null);
     tail = new LinkedListNode<>(null);
@@ -38,7 +34,7 @@ public class DoublyLinkedList<T> {
    *
    * @param node The node to be moved to the front.
    */
-  public void pushToFront(LinkedListNode<T> node){
+  public void pushToFront(LinkedListNode<T> node) {
     remove(node);
     addFirst(node);
   }

@@ -1,6 +1,5 @@
 package edu.brown.cs.student.main;
 
-import static edu.brown.cs.student.main.JsonSerializer.JsonSerializer.fromJson;
 import static edu.brown.cs.student.main.TestAPIServer.tryRequest;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -11,32 +10,21 @@ import edu.brown.cs.student.main.ACSApi.datasource.StateCountyKey;
 import edu.brown.cs.student.main.Cache.CacheElement;
 import edu.brown.cs.student.main.Cache.LinkedListNode;
 import edu.brown.cs.student.main.server.BroadbandHandler;
-import edu.brown.cs.student.main.server.LoadHandler;
-import edu.brown.cs.student.main.server.SearchHandler;
 import edu.brown.cs.student.main.server.SuccessResponse;
-import edu.brown.cs.student.main.server.ViewHandler;
 import java.io.IOException;
 import java.net.HttpURLConnection;
-import java.net.URL;
 import java.time.LocalDateTime;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.plaf.nimbus.State;
-import okio.Buffer;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import spark.Spark;
 
-
-/**
- * Integration tests for the caching functionality of Server API.
- */
+/** Integration tests for the caching functionality of Server API. */
 public class TestMockedCache {
 
   CachedACSApi cachedApi;
@@ -46,7 +34,6 @@ public class TestMockedCache {
     Spark.port(0);
     Logger.getLogger("").setLevel(Level.WARNING);
   }
-
 
   @BeforeEach
   public void setup() {
@@ -63,8 +50,10 @@ public class TestMockedCache {
   }
 
   /**
-   * Fully tests cache functionality using mock data. Makes sure most recently used is always at head of linked list,
-   * stored hashmap is never greater than specified size, least recently used nodes are evicted.
+   * Fully tests cache functionality using mock data. Makes sure most recently used is always at
+   * head of linked list, stored hashmap is never greater than specified size, least recently used
+   * nodes are evicted.
+   *
    * @throws IOException
    */
   @Test
@@ -77,16 +66,24 @@ public class TestMockedCache {
     StateCountyKey keyWayne = new StateCountyKey("Michigan", "Wayne");
     StateCountyKey keyRiverside = new StateCountyKey("California", "Riverside");
 
-    BroadbandData dataOakland = new BroadbandData(67.19999694824219, "Michigan", "Oakland",
-        LocalDateTime.of(2018, 6, 14, 10, 30, 0));
-    BroadbandData dataWayne = new BroadbandData(81.5, "Michigan", "Wayne",
-        LocalDateTime.of(2018, 6, 14, 10, 30, 0));
-    BroadbandData dataRiverside = new BroadbandData(63.099998474121094, "California", "Riverside",
-        LocalDateTime.of(2018, 6, 14, 10, 30, 0));
+    BroadbandData dataOakland =
+        new BroadbandData(
+            67.19999694824219, "Michigan", "Oakland", LocalDateTime.of(2018, 6, 14, 10, 30, 0));
+    BroadbandData dataWayne =
+        new BroadbandData(81.5, "Michigan", "Wayne", LocalDateTime.of(2018, 6, 14, 10, 30, 0));
+    BroadbandData dataRiverside =
+        new BroadbandData(
+            63.099998474121094,
+            "California",
+            "Riverside",
+            LocalDateTime.of(2018, 6, 14, 10, 30, 0));
 
-    LinkedListNode<CacheElement<StateCountyKey, BroadbandData>> kvOakland = new LinkedListNode<>(new CacheElement<>(keyOakland, dataOakland));
-    LinkedListNode<CacheElement<StateCountyKey, BroadbandData>> kvWayne = new LinkedListNode<>(new CacheElement<>(keyWayne, dataWayne));
-    LinkedListNode<CacheElement<StateCountyKey, BroadbandData>> kvRiverside = new LinkedListNode<>(new CacheElement<>(keyRiverside, dataRiverside));
+    LinkedListNode<CacheElement<StateCountyKey, BroadbandData>> kvOakland =
+        new LinkedListNode<>(new CacheElement<>(keyOakland, dataOakland));
+    LinkedListNode<CacheElement<StateCountyKey, BroadbandData>> kvWayne =
+        new LinkedListNode<>(new CacheElement<>(keyWayne, dataWayne));
+    LinkedListNode<CacheElement<StateCountyKey, BroadbandData>> kvRiverside =
+        new LinkedListNode<>(new CacheElement<>(keyRiverside, dataRiverside));
 
     HttpURLConnection connection = tryRequest(apiCall1);
     assertEquals(200, connection.getResponseCode());
@@ -101,7 +98,8 @@ public class TestMockedCache {
     connection = tryRequest(apiCall2);
     assertEquals(200, connection.getResponseCode());
     assertEquals(2, cachedApi.getCache().getLinkedListNodeMap().size());
-    Map<StateCountyKey, LinkedListNode<CacheElement<StateCountyKey, BroadbandData>>> expected = new HashMap<>();
+    Map<StateCountyKey, LinkedListNode<CacheElement<StateCountyKey, BroadbandData>>> expected =
+        new HashMap<>();
     expected.put(keyOakland, kvOakland);
     expected.put(keyWayne, kvWayne);
     assertEquals(cachedApi.getCache().getLinkedListNodeMap().keySet(), expected.keySet());
@@ -113,7 +111,8 @@ public class TestMockedCache {
     expected.put(keyRiverside, kvRiverside);
     assertEquals(cachedApi.getCache().getLinkedListNodeMap().keySet(), expected.keySet());
     connection.disconnect();
-    LinkedListNode<CacheElement<StateCountyKey, BroadbandData>> head = cachedApi.getCache().getDoublyLinkedList().getHead();
+    LinkedListNode<CacheElement<StateCountyKey, BroadbandData>> head =
+        cachedApi.getCache().getDoublyLinkedList().getHead();
     assertEquals(head.next.data, kvRiverside.data);
     assertEquals(head.next.next.data, kvWayne.data);
     connection = tryRequest(apiCall2);
@@ -128,5 +127,4 @@ public class TestMockedCache {
     assertEquals(2, cachedApi.getCache().getLinkedListNodeMap().size());
     assertEquals(2, cachedApi.getAccesses());
   }
-
 }

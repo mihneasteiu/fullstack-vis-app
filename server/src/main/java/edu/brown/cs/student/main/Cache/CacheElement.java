@@ -1,6 +1,4 @@
-/**
- * This package contains classes related to caching mechanisms.
- */
+/** This package contains classes related to caching mechanisms. */
 package edu.brown.cs.student.main.Cache;
 
 import java.util.Objects;
@@ -55,8 +53,7 @@ public class CacheElement<K, V> {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
     CacheElement<?, ?> that = (CacheElement<?, ?>) o;
-    return Objects.equals(key, that.key) &&
-        Objects.equals(value, that.value);
+    return Objects.equals(key, that.key) && Objects.equals(value, that.value);
   }
 
   /**
@@ -76,9 +73,6 @@ public class CacheElement<K, V> {
    */
   @Override
   public String toString() {
-    return "CacheElement{" +
-        "key=" + key +
-        ", value=" + value +
-        '}';
+    return "CacheElement{" + "key=" + key + ", value=" + value + '}';
   }
 }

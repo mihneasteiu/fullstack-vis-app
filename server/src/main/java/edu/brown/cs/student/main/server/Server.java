@@ -5,17 +5,15 @@ import static spark.Spark.after;
 import edu.brown.cs.student.main.ACSApi.datasource.ACSApi;
 import edu.brown.cs.student.main.ACSApi.datasource.CachedACSApi;
 import edu.brown.cs.student.main.ACSApi.datasource.CensusDatasource;
-import edu.brown.cs.student.main.ACSApi.datasource.MockACS;
 import java.util.concurrent.ConcurrentHashMap;
 import spark.Spark;
 
-/**
- * Server class, with load csv, viewcsv, broadband endpoints.
- */
+/** Server class, with load csv, viewcsv, broadband endpoints. */
 public class Server {
 
   /**
    * Server runs with object that implements CensusDataSource interface
+   *
    * @param datasource
    */
   public Server(CensusDatasource datasource) {
@@ -40,6 +38,9 @@ public class Server {
   }
 
   public static void main(String[] args) {
-    Server CSVServer = new Server(new CachedACSApi(30, new ACSApi())); //defaults to running on CachedACSAPI for this sprint
+    Server CSVServer =
+        new Server(
+            new CachedACSApi(
+                30, new ACSApi())); // defaults to running on CachedACSAPI for this sprint
   }
 }

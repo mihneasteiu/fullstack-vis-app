@@ -9,7 +9,6 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import spark.Request;
 import spark.Response;
 import spark.Route;
@@ -20,12 +19,8 @@ import spark.Route;
  */
 public class GetDataHandler implements Route {
 
-  /**
-   * Constructs a new GetDataHandler with the given shared state.
-   *
-   */
-  public GetDataHandler() {
-  }
+  /** Constructs a new GetDataHandler with the given shared state. */
+  public GetDataHandler() {}
 
   /**
    * Handles the file loading request.
@@ -90,7 +85,7 @@ public class GetDataHandler implements Route {
    */
   private List<List<String>> parseFile(String filepath) throws IOException {
     try (FileReader reader = new FileReader(filepath)) {
-      Parser<List<String>> parser = new Parser<List<String>>(reader, true, new TrivialCreator());
+      Parser<List<String>> parser = new Parser<List<String>>(reader, false, new TrivialCreator());
       parser.parse();
       return parser.getParsedContent();
     }

@@ -43,12 +43,11 @@ export function SelectInput(props: SelectInputProps) {
         aria-label="Select a data file"
       >
         <option>Select a file</option>
-        <option>nbaplayers.csv</option>
-        <option>Student Records</option>
+        <option>census/income_by_race.csv</option>
+        <option>census/postsecondary_education.csv</option>
         <option>Nonexistent table</option>
-        <option>Empty Table</option>
-        <option>RI Income by Race</option>
-        <option>just text</option>
+        <option>malformed/malformed_signs.csv</option>
+        <option>stars/stardata.csv</option>
       </select>
 
       <select

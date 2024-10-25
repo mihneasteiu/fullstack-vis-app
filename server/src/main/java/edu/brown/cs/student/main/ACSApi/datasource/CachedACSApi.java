@@ -1,14 +1,12 @@
-/**
- * This package contains classes related to the ACS (American Community Survey) API data source.
- */
+/** This package contains classes related to the ACS (American Community Survey) API data source. */
 package edu.brown.cs.student.main.ACSApi.datasource;
 
 import edu.brown.cs.student.main.Cache.LRUCache;
 import java.util.Optional;
 
 /**
- * A cached implementation of the CensusDatasource interface.
- * This class wraps another CensusDatasource and caches the results using an LRU cache.
+ * A cached implementation of the CensusDatasource interface. This class wraps another
+ * CensusDatasource and caches the results using an LRU cache.
  */
 public class CachedACSApi implements CensusDatasource {
   private final CensusDatasource acsApi;
@@ -28,9 +26,9 @@ public class CachedACSApi implements CensusDatasource {
   }
 
   /**
-   * Retrieves broadband data for the specified state and county.
-   * If the data is in the cache, it is returned from there. Otherwise, it is fetched
-   * from the underlying ACS API and then cached for future use.
+   * Retrieves broadband data for the specified state and county. If the data is in the cache, it is
+   * returned from there. Otherwise, it is fetched from the underlying ACS API and then cached for
+   * future use.
    *
    * @param state The state for which to retrieve broadband data.
    * @param county The county for which to retrieve broadband data.

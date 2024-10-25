@@ -4,14 +4,11 @@ import com.squareup.moshi.JsonAdapter;
 import com.squareup.moshi.Moshi;
 import java.io.IOException;
 import java.lang.reflect.Type;
-import javax.swing.plaf.nimbus.State;
 
 /** Json serializer helper class. */
 public class JsonSerializer {
-  private static final Moshi moshi = new Moshi.Builder()
-      .add(new LocalDateTimeAdapter())
-      .add(new StateCountyMapAdapter())
-      .build();
+  private static final Moshi moshi =
+      new Moshi.Builder().add(new LocalDateTimeAdapter()).add(new StateCountyMapAdapter()).build();
 
   public static String toJson(Object obj) {
     JsonAdapter<Object> jsonAdapter = moshi.adapter(Object.class);
