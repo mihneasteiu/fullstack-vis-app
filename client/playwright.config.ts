@@ -69,9 +69,15 @@ export default defineConfig({
   ],
 
   /* Run your local dev server before starting the tests */
-  webServer: {
+  webServer: [{
+    command: 'cd ../server && ./run',
+    url: 'http://localhost:3232/viewcsv',
+    timeout: 12000,
+    reuseExistingServer: !process.env.CI,
+  }, {
     command: 'npm start',
     url: 'http://localhost:8000',
+    timeout: 12000,
     reuseExistingServer: !process.env.CI,
-  },
+  }],
 });

@@ -1,10 +1,6 @@
-import { ListenOptions } from "net";
-
-// Define a Map where keys are strings and values are 2D arrays of numbers
-const map = new Map<string, string[][]>();
 
 // Adding key-value pairs
-map.set("Star Data", [
+const mocked =[
   ["StarID", "ProperName", "X", "Y", "Z"],
   ["1", "Andreas", "282.43485", "0.00449", "5.36884"],
   ["2", "Rory", "43.04329", "0.00285", "-15.24144"],
@@ -29,211 +25,24 @@ map.set("Star Data", [
   ["20", "Sandi", "85.20962", "0.09361", "37.10201"],
   ["21", "Lesa", "169.56332", "0.19602", "23.85242"],
   ["22", "Paul", "145.72842", "0.17838", "-169.738"],
-]);
-
-map.set("just text", [
-  ["StarID", "ProperName"],
-  ["1", "Andreas"],
-  ["2", "Rory"],
-  ["3", "Mortimer"],
-]);
-
-map.set("Student Records", [
-  [
-    "Name",
-    "Math",
-    "Physics",
-    "English",
-    "Chemistry",
-    "Biology",
-    "History",
-    "Geography",
-  ],
-  ["Student_1", "72", "87", "60", "68", "75", "82", "70"],
-  ["Student_2", "96", "75", "70", "85", "88", "91", "80"],
-  ["Student_3", "63", "66", "83", "71", "65", "78", "77"],
-  ["Student_4", "84", "66", "59", "80", "81", "69", "85"],
-  ["Student_5", "57", "79", "71", "55", "66", "73", "62"],
-]);
-
-map.set("Empty Table", [[]]);
-map.set("RI Income by Race", [
-  [
-    "Race",
-    "ID Year",
-    "Year",
-    "Household Income by Race",
-    "Household Income by Race Moe",
-    "Geography",
-    "ID Geography",
-    "Slug Geography",
-  ],
-  [
-    "Total",
-    "2020",
-    "2020",
-    "85413",
-    "6122",
-    "Bristol County, RI",
-    "05000US44001",
-    "bristol-county-ri",
-  ],
-  [
-    "Total",
-    "2020",
-    "2020",
-    "75857",
-    "2022",
-    "Kent County, RI",
-    "05000US44003",
-    "kent-county-ri",
-  ],
-  [
-    "Total",
-    "2020",
-    "2020",
-    "84282",
-    "2629",
-    "Newport County, RI",
-    "05000US44005",
-    "newport-county-ri",
-  ],
-  [
-    "Total",
-    "2020",
-    "2020",
-    "62323",
-    "1270",
-    "Providence County, RI",
-    "05000US44007",
-    "providence-county-ri",
-  ],
-  [
-    "Total",
-    "2020",
-    "2020",
-    "86970",
-    "3651",
-    "Washington County, RI",
-    "05000US44009",
-    "washington-county-ri",
-  ],
-  [
-    "White",
-    "2020",
-    "2020",
-    "85359",
-    "6432",
-    "Bristol County, RI",
-    "05000US44001",
-    "bristol-county-ri",
-  ],
-  [
-    "White",
-    "2020",
-    "2020",
-    "75408",
-    "2311",
-    "Kent County, RI",
-    "05000US44003",
-    "kent-county-ri",
-  ],
-  [
-    "White",
-    "2020",
-    "2020",
-    "87407",
-    "3706",
-    "Newport County, RI",
-    "05000US44005",
-    "newport-county-ri",
-  ],
-  [
-    "White",
-    "2020",
-    "2020",
-    "67639",
-    "1255",
-    "Providence County, RI",
-    "05000US44007",
-    "providence-county-ri",
-  ],
-  [
-    "White",
-    "2020",
-    "2020",
-    "88147",
-    "3942",
-    "Washington County, RI",
-    "05000US44009",
-    "washington-county-ri",
-  ],
-  [
-    "Black",
-    "2020",
-    "2020",
-    "72443",
-    "54768",
-    "Bristol County, RI",
-    "05000US44001",
-    "bristol-county-ri",
-  ],
-  [
-    "Black",
-    "2020",
-    "2020",
-    "100375",
-    "20176",
-    "Kent County, RI",
-    "05000US44003",
-    "kent-county-ri",
-  ],
-  [
-    "Black",
-    "2020",
-    "2020",
-    "46622",
-    "14559",
-    "Newport County, RI",
-    "05000US44005",
-    "newport-county-ri",
-  ],
-  [
-    "Black",
-    "2020",
-    "2020",
-    "46084",
-    "3384",
-    "Providence County, RI",
-    "05000US44007",
-    "providence-county-ri",
-  ],
-  [
-    "Black",
-    "2020",
-    "2020",
-    "45849",
-    "6614",
-    "Washington County, RI",
-    "05000US44009",
-    "washington-county-ri",
-  ],
-]);
+];
 
 export async function getTable(label: string): Promise<string[][]> {
+  if (label == "Mocked Star Data") {
+    return mocked;
+  }
+  try {
     const loadResponse = await fetch(
-      "http://localhost:3232/getData?filepath="+label
+      "http://localhost:3232/getData?filepath=" + label
     );
     const loadJson = await loadResponse.json();
-    switch (loadResponse.status) {
-      case 400:
-        throw new Error(`Bad request: ${loadJson.message || 'Invalid JSON format'}`);
-      case 404:
-        throw new Error(`Data source error: ${loadJson.message || 'File not found'}`);
-      case 500:
-        throw new Error(`Server error: ${loadJson.message || 'Unexpected error occurred'}`);
-    }
     const result: string = loadJson.result;
-    const data: string[][] = loadJson.content;
-    return data;
+    if (result !== "error") {
+      const data: string[][] = loadJson.content;
+      return data;
+    }
+  } catch (error) {
+    throw new Error("Error in fetch");
+  }
+  throw new Error("File " + label + " not found");
 }
