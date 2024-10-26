@@ -1,6 +1,6 @@
 import "../../styles/main.css";
 import { histEntry } from "./Select";
-import { getTable } from "../../data";
+import { getTable } from "../../data/data";
 import { Bar } from "react-chartjs-2";
 import "chart.js/auto";
 import React, { useEffect } from "react";

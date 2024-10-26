@@ -43,7 +43,6 @@ export function SelectInput(props: SelectInputProps) {
         }
         break;
 
-      case 'Enter':
       case ' ':
         if (e.target === buttonRef.current) {
           e.preventDefault();
@@ -80,10 +79,13 @@ export function SelectInput(props: SelectInputProps) {
         <option>Select a file</option>
         <option>census/income_by_race.csv</option>
         <option>census/postsecondary_education.csv</option>
-        <option>Nonexistent table</option>
         <option>malformed/malformed_signs.csv</option>
-        <option>stars/stardata.csv</option>
-        <option>Empty Table</option>
+        <option>Nonexistent table</option>
+        <option>Text Dataset</option>
+        <option>Number Dataset</option>
+        <option>Star Data</option>
+        <option>Empty Dataset</option>
+
       </select>
 
       <select
