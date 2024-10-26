@@ -83,6 +83,7 @@ export function SelectInput(props: SelectInputProps) {
         <option>Nonexistent table</option>
         <option>malformed/malformed_signs.csv</option>
         <option>stars/stardata.csv</option>
+        <option>Empty Table</option>
       </select>
 
       <select
@@ -114,7 +115,8 @@ export function SelectInput(props: SelectInputProps) {
 
       {/* Instructions for screen reader users */}
       <div className="sr-only" aria-live="polite">
-        Use Tab to move between controls, arrow keys to change options, and Enter to select
+        Use Tab to move between controls, arrow keys to change options, and
+        Enter to select
       </div>
     </div>
   );

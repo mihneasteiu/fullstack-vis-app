@@ -32,6 +32,9 @@ export async function getTable(label: string): Promise<string[][]> {
   if (label == "Mocked Star Data") {
     return mocked;
   }
+  if (label == "Empty Table") {
+    return [];
+  }
 
   try {
     const loadResponse = await fetch(
