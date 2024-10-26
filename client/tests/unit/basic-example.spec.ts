@@ -2,7 +2,7 @@ import { expect, test } from "vitest";
 
 // all exports from main will now be available as main.X
 // import * as main from '../mock/src/main';
-import * as mockedDData from "../../src/data";
+import * as mockedDData from "../../src/data/data";
 
 // Notice how you can test vanilla TS functions using Playwright as well!
 test("test getTable", async () => {
