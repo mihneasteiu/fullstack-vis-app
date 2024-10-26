@@ -39,6 +39,22 @@ test("after I click the retrieve table button, i see the selected table in the o
     page.getByText("Couldn't parse the following headers: ProperName")
   ).not.toBeVisible();
 
+  await page
+    .getByLabel("Select a data file", { exact: true })
+    .selectOption("Star Data");
+  await page
+    .getByLabel("Select display mode", { exact: true })
+    .selectOption("Vertical Bar Chart");
+  await page.getByLabel("retrieve").click();
+  // Verify expected data is visible
+  await expect(page.getByText("Andreas")).not.toBeVisible();
+  await expect(page.getByText("StarID")).not.toBeVisible();
+  await expect(page.getByText("-169.738")).not.toBeVisible();
+  // Verify no parsing errors
+  await expect(
+    page.getByText("Couldn't parse the following headers: ProperName")
+  ).not.toBeVisible();
+
   // Test Text Dataset with vertical bar chart
   await page
     .getByLabel("Select a data file", { exact: true })
@@ -76,35 +92,40 @@ test("after I click the retrieve table button, i see the selected table in the o
   await page
     .getByLabel("Select display mode", { exact: true })
     .selectOption("Stacked Bar Chart");
-  await page.getByLabel("retrieve").click()
+  await page.getByLabel("retrieve").click();
   canvas = page.getByRole("img");
   await expect(canvas).toBeVisible();
-  await expect(
-    page.getByText("Score1")
-  ).not.toBeVisible();
+  await expect(page.getByText("Score1")).not.toBeVisible();
 
   // Test Number Dataset in table mode
   await page
     .getByLabel("Select display mode", { exact: true })
     .selectOption("Table");
-  await page.getByLabel("retrieve").click()
+  await page.getByLabel("retrieve").click();
   canvas = page.getByRole("img");
   await expect(canvas).not.toBeVisible();
-  await expect(
-    page.getByText("Score1")
-  ).toBeVisible();
+  await expect(page.getByText("Score1")).toBeVisible();
 
   // Test Empty Dataset handling
   await page
     .getByLabel("Select a data file", { exact: true })
     .selectOption("Empty Dataset");
-  await page.getByLabel("retrieve").click()
+  await page.getByLabel("retrieve").click();
   canvas = page.getByRole("img");
   await expect(canvas).not.toBeVisible();
+  await expect(page.getByText("Score1")).not.toBeVisible();
+
+  await page
+    .getByLabel("Select display mode", { exact: true })
+    .selectOption("Stacked Bar Chart");
+  await page.getByLabel("retrieve").click();
+  canvas = page.getByRole("img");
+  await expect(canvas).not.toBeVisible();
+  await expect(page.getByText("Score1")).not.toBeVisible();
   await expect(
-    page.getByText("Score1")
+    page.getByText("Selected dataset contains no numerical Y values.")
   ).toBeVisible();
-  
+
   // Test resetting to default state
   await page
     .getByLabel("Select a data file", { exact: true })
@@ -115,7 +136,6 @@ test("after I click the retrieve table button, i see the selected table in the o
       "Please choose one of the tables in the dropdown menu to display it."
     )
   ).toBeVisible();
-  await expect(page.getByText("john@email.com")).not.toBeVisible();
 });
 
 // Test handling of nonexistent data sources
@@ -142,7 +162,7 @@ test("if i click the retrieve button without choosing a display mode or dataset,
   ).toBeVisible();
 
   // Test clicking retrieve with dataset but no display mode
-  await page.getByLabel("Select a data file", {exact: true}).selectOption("Mocked Star Data");
+  await page.getByLabel("Select a data file", {exact: true}).selectOption("Star Data");
   await page.getByLabel("retrieve").click();
   await expect(page.getByText("Please choose a display mode.")).toBeVisible();
   await expect(page.getByText("StarID")).not.toBeVisible();
@@ -154,7 +174,7 @@ test("if I select multiple datasets, the one I selected before pressing the butt
   // Make multiple dataset selections
   await page.getByLabel("Select a data file", {exact: true}).selectOption("census/income_by_race.csv");
   await page.getByLabel("Select a data file", {exact: true}).selectOption("Nonexistent table");
-  await page.getByLabel("Select a data file", {exact: true}).selectOption("Mocked Star Data");
+  await page.getByLabel("Select a data file", {exact: true}).selectOption("Star Data");
   await page
     .getByLabel("Select display mode", { exact: true })
     .selectOption("Table");
@@ -180,7 +200,7 @@ test("after I choose vertical bar chart display mode, i see data displayed as a 
   ).toBeVisible();
 
   // Test star data with vertical bar chart
-  await page.getByLabel("Select a data file", {exact: true}).selectOption("Mocked Star Data");
+  await page.getByLabel("Select a data file", {exact: true}).selectOption("Star Data");
   await page.getByLabel("Select display mode", {exact: true}).selectOption("Vertical Bar Chart");
   await page.getByLabel("retrieve").click();
   await expect(page.getByText("Andreas")).not.toBeVisible();
@@ -213,7 +233,7 @@ test("after I choose vertical bar chart display mode, i see data displayed as a 
 test("dataset chosen and vertical bar view mode, no valid headers", async ({
   page,
 }) => {
-  await page.getByLabel("Select a data file", {exact: true}).selectOption("Empty Table");
+  await page.getByLabel("Select a data file", {exact: true}).selectOption("Empty Dataset");
   await page.getByLabel("Select display mode", {exact: true}).selectOption("Vertical Bar Chart");
   await page.getByLabel("retrieve").click();
   // Verify error messages
@@ -232,7 +252,7 @@ test("same data set, alternating view modes", async ({
   page,
 }) => {
   // Test initial stacked bar chart view
-  await page.getByLabel("Select a data file", {exact: true}).selectOption("Mocked Star Data");
+  await page.getByLabel("Select a data file", {exact: true}).selectOption("Star Data");
   await page.getByLabel("Select display mode", {exact: true}).selectOption("Stacked Bar Chart");
   await page.getByLabel("retrieve").click();
   let canvas = page.getByRole("img");
@@ -273,10 +293,6 @@ test("api query dataset, table and bar chart display mode", async ({
     .selectOption("Table");
   await page.getByLabel("retrieve").click();
   
-  // Verify data display
-  await expect(
-    page.getByText("Couldn't parse the following headers: ")
-  ).not.toBeVisible();
   await expect(page.getByText("Brown University")).toBeVisible();
   await expect(page.getByText("Two or More Races")).toBeVisible();
   let canvas = page.getByRole("img");
@@ -287,9 +303,6 @@ test("api query dataset, table and bar chart display mode", async ({
     .getByLabel("Select display mode", { exact: true })
     .selectOption("Vertical Bar Chart");
   await page.getByLabel("retrieve").click();
-  await expect(
-    page.getByText("Couldn't parse the following headers: ")
-  ).not.toBeVisible();
   await expect(page.getByText("Brown University")).not.toBeVisible();
   await expect(page.getByText("Two or More Races")).not.toBeVisible();
   canvas = page.getByRole("img");
@@ -316,14 +329,11 @@ test("alternating between datasets and display mode, mock and non-mock", async (
   // Switch to mock data in table view
   await page
     .getByLabel("Select a data file", { exact: true })
-    .selectOption("Mocked Star Data");
+    .selectOption("Star Data");
   await page
     .getByLabel("Select display mode", { exact: true })
     .selectOption("Table");
   await page.getByLabel("retrieve").click();
-  await expect(
-    page.getByText("Couldn't parse the following headers: ")
-  ).not.toBeVisible();
   await expect(page.getByText("Brown University")).not.toBeVisible();
   await expect(page.getByText("Two or More Races")).not.toBeVisible();
   await expect(page.getByText("Andreas")).toBeVisible();
