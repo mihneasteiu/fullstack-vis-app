@@ -1,0 +1,21 @@
+1.1 What concerns, if any, do you have about using an LLM in this way? 
+Think from the perspective of an engineer: how might an LLM’s training data in this case 
+impact the mocked data it is returning?
+
+Since the LLM only learned from training data then any bias will be reflected in the mocked data
+that it outputs. That's why the engineer needs to make sure that the LLM comes from a reliable source
+that has prevented bias in their LLM. It also depends what resources were used in the training dataset,
+and this can also impact the output of the model.
+
+1.2 What might “bias” mean in this context? I.e., what kinds of bias might you specifically 
+want to mitigate when you use an LLM to generate test data?
+
+Bias would mean being more likely to output some type of information than other ones that are equally likely
+to appear in a real-world setting. For example, if you only train an LLM on wikipedia articles, it might not be able
+to create code or some other output in a structure different than what it has seen before.
+I would want to mitigate socioeconomic or demographic bias.
+
+1.3 How did you attempt to mitigate the above concerns, if any? 
+
+I tried to mitigate them by asking the LLM for a specific kind of json data, for example with only text input, 
+or number input, or an empty dataset. 
