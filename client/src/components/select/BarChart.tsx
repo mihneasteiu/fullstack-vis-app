@@ -1,10 +1,6 @@
 import "../../styles/main.css";
-import { histEntry } from "./Select";
-import { getTable } from "../../mockedData";
 import { Bar } from "react-chartjs-2";
 import "chart.js/auto";
-import React, { useEffect } from "react";
-import { Dispatch, SetStateAction, useState } from "react";
 
 interface barChartProps {
   data: string[][];
