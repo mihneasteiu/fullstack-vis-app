@@ -94,7 +94,7 @@ public class LoadHandler implements Route {
    */
   private Parser<List<String>> parseFile(String filepath) throws IOException {
     try (FileReader reader = new FileReader(filepath)) {
-      Parser<List<String>> parser = new Parser<List<String>>(reader, true, new TrivialCreator());
+      Parser<List<String>> parser = new Parser<List<String>>(reader, false, new TrivialCreator());
       parser.parse();
       return parser;
     }
