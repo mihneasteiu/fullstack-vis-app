@@ -1,7 +1,10 @@
 import { useState } from "react";
 import "../../styles/main.css";
 import { SelectInput } from "./SelectInput";
+import { SelectBroadbandInput } from "./SelectBroadbandInput";
 import { SelectHistory } from "./SelectHistory";
+import { SelectBroadbandHistory } from "./SelectBroadbandHistory";
+
 import React from "react";
 
 /**
@@ -39,10 +42,19 @@ export function Select() {
   //    then, pass this variable in as a prop to SelectHistory below and uncomment it
   const [history, setHistory] = useState<string>("Select a file");
   const [mode, setMode] = useState<string>("Select display mode");
+  const [state, setState] = useState<string>("");
+  const [county, setCounty] = useState<string>("");
 
   return (
     <div className="min-h-[95vh] relative">
       <div className="w-full" style={{ width: "100%" }}>
+        <SelectBroadbandInput
+          state={state}
+          setState={setState}
+          county={county}
+          setCounty={setCounty}
+        />
+        <SelectBroadbandHistory state={state} county={county} />
         <SelectInput
           history={history}
           setHistory={setHistory}
@@ -50,10 +62,7 @@ export function Select() {
           setMode={setMode}
         />
         <div className="select-container" aria-lable="Select container">
-          <SelectHistory
-            history={history}
-            mode={mode}
-          />
+          <SelectHistory history={history} mode={mode} />
         </div>
       </div>
     </div>

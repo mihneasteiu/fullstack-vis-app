@@ -10,6 +10,10 @@
   
 }
 
+.SignIn {
+    margin: 10px;
+}
+
 .App-header {
   background: linear-gradient(45deg, rgb(255, 0, 144), purple, violet, cyan);
   background-size: 300% 300%;
