@@ -38,13 +38,11 @@ export interface Tab {
  *
  */
 export function Select() {
-  // TODO 2 (Solution): set-up a React useState variable here to update the main display area once you click the submit button,
-  //    then, pass this variable in as a prop to SelectHistory below and uncomment it
   const [history, setHistory] = useState<string>("Select a file");
   const [mode, setMode] = useState<string>("Select display mode");
   const [state, setState] = useState<string>("");
   const [county, setCounty] = useState<string>("");
-
+  
   return (
     <div className="min-h-[95vh] relative">
       <div className="w-full" style={{ width: "100%" }}>

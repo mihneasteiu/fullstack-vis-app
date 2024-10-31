@@ -7,6 +7,7 @@ import {
   useEffect,
 } from "react";
 import "../../styles/main.css";
+import { useKeyboardNav } from "../../KeyboardManager";
 
 /**
  * Defines the props for SelectInput component.
@@ -34,10 +35,21 @@ interface SelectInputProps {
  * @returns {JSX.Element} JSX Element representing the SelectInput component.
  */
 export function SelectInput(props: SelectInputProps) {
-  const containerRef = useRef<HTMLDivElement>(null);
   const fileSelectRef = useRef<HTMLSelectElement>(null);
   const modeSelectRef = useRef<HTMLSelectElement>(null);
-  const buttonRef = useRef<HTMLButtonElement>(null);
+  const getDataRef = useRef<HTMLButtonElement>(null);
+
+  useKeyboardNav("file", fileSelectRef, {
+    position: 3,
+  });
+  useKeyboardNav("mode", modeSelectRef, {
+    position: 4,
+  });
+  useKeyboardNav("submit", getDataRef, {
+    position: 5,
+    isSubmit: true,
+    onClick: requestData
+  });
 
   /**
    * handleSubmit sets the selected text and mode in the parent state.
@@ -50,76 +62,23 @@ export function SelectInput(props: SelectInputProps) {
     props.setMode(mode);
   }
 
-  /**
-   * handleKeyDown manages keyboard interactions within the component.
-   * Specifically, it enables custom Tab navigation and triggers the submit action
-   * when the space key is pressed while focusing on the button.
-   *
-   * @param {KeyboardEvent<HTMLElement>} e - The keyboard event.
-   */
-  const handleKeyDown = (e: KeyboardEvent<HTMLElement>) => {
-    // Elements that can receive focus
-    const focusableElements = [
-      fileSelectRef.current,
-      modeSelectRef.current,
-      buttonRef.current,
-    ].filter(
-      (element): element is HTMLSelectElement | HTMLButtonElement =>
-        element !== null
-    );
-
-    const activeElement = document.activeElement;
-    const currentIndex = activeElement
-      ? focusableElements.findIndex((el) => el === activeElement)
-      : -1;
-
-    switch (e.key) {
-      case "Tab":
-        // Prevent default tabbing behavior to manage custom tabbing order
-        e.preventDefault();
-        if (e.shiftKey) {
-          // Shift + Tab moves focus backwards
-          const nextIndex =
-            currentIndex <= 0 ? focusableElements.length - 1 : currentIndex - 1;
-          focusableElements[nextIndex]?.focus();
-        } else {
-          // Tab moves focus forwards
-          const nextIndex =
-            currentIndex >= focusableElements.length - 1 ? 0 : currentIndex + 1;
-          focusableElements[nextIndex]?.focus();
-        }
-        break;
-
-      case " ":
-        // Space key triggers the retrieve action if the button is focused
-        if (e.target === buttonRef.current) {
-          e.preventDefault();
-          const selectText =
-            fileSelectRef.current?.options[fileSelectRef.current.selectedIndex]
-              ?.text;
-          const selectDisplay =
-            modeSelectRef.current?.options[modeSelectRef.current.selectedIndex]
-              ?.text;
-          if (selectText != null && selectDisplay != null) {
-            handleSubmit(selectText, selectDisplay);
-          }
-        }
-        break;
+  function requestData() { 
+    const selectText =
+      fileSelectRef.current?.options[fileSelectRef.current.selectedIndex]
+        ?.text;
+    const selectDisplay =
+      modeSelectRef.current?.options[modeSelectRef.current.selectedIndex]
+        ?.text;
+    if (selectText != null && selectDisplay != null) {
+      handleSubmit(selectText, selectDisplay);
     }
-  };
-
-  // Focus on the file select dropdown when the component mounts
-  useEffect(() => {
-    fileSelectRef.current?.focus();
-  }, []);
+  }
 
   return (
     <div
-      ref={containerRef}
       className="dropdown-container"
       role="region"
       aria-label="Data selection controls"
-      onKeyDown={handleKeyDown}
     >
       {/* Dropdown for selecting a data file */}
       <select
@@ -156,18 +115,8 @@ export function SelectInput(props: SelectInputProps) {
 
       {/* Button to retrieve the selected data and display mode */}
       <button
-        ref={buttonRef}
-        onClick={() => {
-          const selectText =
-            fileSelectRef.current?.options[fileSelectRef.current.selectedIndex]
-              ?.text;
-          const selectDisplay =
-            modeSelectRef.current?.options[modeSelectRef.current.selectedIndex]
-              ?.text;
-          if (selectText != null && selectDisplay != null) {
-            handleSubmit(selectText, selectDisplay);
-          }
-        }}
+        ref={getDataRef}
+        onClick={requestData}
         aria-label="Retrieve selected data"
       >
         Retrieve
@@ -176,7 +125,7 @@ export function SelectInput(props: SelectInputProps) {
       {/* Instructions for screen reader users */}
       <div className="sr-only" aria-live="polite">
         Use Tab to move between controls, arrow keys to change options, and
-        Enter to select
+        Enter or Space to select
       </div>
     </div>
   );

@@ -9,62 +9,102 @@ import { Table } from "./Table";
 import { BarChart } from "./BarChart";
 
 /**
- * A interface for the props that are passed into SelectHistory.
- *
- * @params
- * history: an array holding the history entries that are to be
- *  outputted to the end-user in the main output area
+ * Props interface for the SelectBroadbandHistory component.
  */
 interface SelectBroadbandHistoryProps {
-    state: string;
-    county: string;
-  }
-  
-  /**
-   * Builds a SelectHistory component that displays the output area according
-   *  to any commands inputted by the user.
-   *
-   * @param props the history entries (see SelectHistoryProps for more details)
-   * @returns JSX that will print a tabular view of the passed in data
-   */
-  export function SelectBroadbandHistory(props: SelectBroadbandHistoryProps) {
-    const state = props.state;
-    const county = props.county;
-    const [result, setResult] = useState<string | null>(null);
-    const [loading, setLoading] = useState<boolean | null>(false);
-    const [error, setError] = useState<string | null>(null);
-  
-    useEffect(() => {
-      if (state !== "" && county !== "") {
-        const fetchBroadBandData = async () => {
-          setLoading(true);
-          setError(null);
-          try {
-            const broadbandResult = await getBroadBand(state, county);
-            setResult(broadbandResult);
-          } catch (error) {
-            if (error instanceof Error) {
-              setError(error.message);
-            } else {
-              setError("Error in fetch");
-            }
-          } finally {
-            setLoading(false);
+  /** The US state to query broadband data for */
+  state: string;
+  /** The county within the state to query broadband data for */
+  county: string;
+}
+
+/**
+ * Component that displays broadband coverage information for a specific county and state.
+ * Fetches data from a local API endpoint and handles loading, error, and success states.
+ * 
+ * @component
+ * @example
+ * ```tsx
+ * <SelectBroadbandHistory 
+ *   state="California"
+ *   county="Los Angeles"
+ * />
+ * ```
+ * 
+ * Features:
+ * - Automatically fetches data when state and county props change
+ * - Displays loading state while fetching
+ * - Shows error messages if the fetch fails
+ * - Cleanses input data by removing spaces and converting to lowercase
+ * - Formats broadband percentage to 1 decimal place
+ * 
+ * @param props - Component props
+ * @param props.state - The state name to query
+ * @param props.county - The county name to query
+ * @returns A div containing either loading state, error message, or broadband coverage data
+ */
+export function SelectBroadbandHistory(props: SelectBroadbandHistoryProps) {
+  const state = props.state;
+  const county = props.county;
+  const [result, setResult] = useState<string | null>(null);
+  const [loading, setLoading] = useState<boolean | null>(false);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (state !== "" && county !== "") {
+      const fetchBroadBandData = async () => {
+        setLoading(true);
+        setError(null);
+        try {
+          const broadbandResult = await getBroadBand(state, county);
+          setResult(broadbandResult);
+        } catch (error) {
+          if (error instanceof Error) {
+            setError(error.message);
+          } else {
+            setError("Error in fetch");
           }
-        };
-        fetchBroadBandData();
-      }
-    }, [state, county]);
+        } finally {
+          setLoading(false);
+        }
+      };
+      fetchBroadBandData();
+    }
+  }, [state, county]);
 
-    if (loading) {
-      return <div>Data is loading...</div>;
-    }
-    if (error) {
-      return <div>{error}</div>;
-    }
-    return <div>{result}</div>;
+  if (loading) {
+    return <div>Data is loading...</div>;
   }
+  if (error) {
+    return <div>{error}</div>;
+  }
+  return <div>{result}</div>;
+}
 
+/**
+ * Fetches broadband coverage data from the local API endpoint.
+ * 
+ * @param state - The state name to query
+ * @param county - The county name to query
+ * @returns A formatted string containing the broadband coverage percentage
+ * @throws Error with appropriate message if the request fails
+ * 
+ * Response Status Codes:
+ * - 200: Success - Returns formatted coverage data
+ * - 400: Bad Request - Invalid state/county combination
+ * - 404: Not Found - Data not found for state/county
+ * - 500: Server Error - Internal API error
+ * 
+ * @example
+ * ```typescript
+ * try {
+ *   const result = await getBroadBand("California", "Los Angeles");
+ *   console.log(result); // "Los Angeles county, California broadband coverage is 93.3%"
+ * } catch (error) {
+ *   console.error(error.message);
+ * }
+ * ```
+ */
     async function getBroadBand(state: string, county: string): Promise<string> {
         try {
             const cleanString = (input: string): string => input.replace(/\s+/g, '').toLowerCase();
