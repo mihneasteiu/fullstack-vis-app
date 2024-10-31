@@ -7,6 +7,10 @@
     "dev": "concurrently \"npm run server\" \"npm run client\""
   },
   "devDependencies": {
+    "@clerk/testing": "^1.3.16",
     "concurrently": "^8.2.0"
+  },
+  "dependencies": {
+    "@playwright/test": "^1.48.2"
   }
 }

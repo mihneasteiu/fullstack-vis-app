@@ -9,7 +9,6 @@ import {
 import "../../styles/main.css";
 import { useKeyboardNav } from "../../KeyboardManager";
 
-
 interface SelectInputProps {
   state: string;
   setState: Dispatch<SetStateAction<string>>;

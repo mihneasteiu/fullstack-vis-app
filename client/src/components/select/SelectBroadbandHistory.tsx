@@ -21,23 +21,23 @@ interface SelectBroadbandHistoryProps {
 /**
  * Component that displays broadband coverage information for a specific county and state.
  * Fetches data from a local API endpoint and handles loading, error, and success states.
- * 
+ *
  * @component
  * @example
  * ```tsx
- * <SelectBroadbandHistory 
+ * <SelectBroadbandHistory
  *   state="California"
  *   county="Los Angeles"
  * />
  * ```
- * 
+ *
  * Features:
  * - Automatically fetches data when state and county props change
  * - Displays loading state while fetching
  * - Shows error messages if the fetch fails
  * - Cleanses input data by removing spaces and converting to lowercase
  * - Formats broadband percentage to 1 decimal place
- * 
+ *
  * @param props - Component props
  * @param props.state - The state name to query
  * @param props.county - The county name to query
@@ -83,18 +83,18 @@ export function SelectBroadbandHistory(props: SelectBroadbandHistoryProps) {
 
 /**
  * Fetches broadband coverage data from the local API endpoint.
- * 
+ *
  * @param state - The state name to query
  * @param county - The county name to query
  * @returns A formatted string containing the broadband coverage percentage
  * @throws Error with appropriate message if the request fails
- * 
+ *
  * Response Status Codes:
  * - 200: Success - Returns formatted coverage data
  * - 400: Bad Request - Invalid state/county combination
  * - 404: Not Found - Data not found for state/county
  * - 500: Server Error - Internal API error
- * 
+ *
  * @example
  * ```typescript
  * try {
@@ -105,42 +105,50 @@ export function SelectBroadbandHistory(props: SelectBroadbandHistoryProps) {
  * }
  * ```
  */
-    async function getBroadBand(state: string, county: string): Promise<string> {
-        try {
-            const cleanString = (input: string): string => input.replace(/\s+/g, '').toLowerCase();
-            const cleaned_state = cleanString(state);
-            const cleaned_county = cleanString(county);
-            const response = await fetch(
-                `http://localhost:3232/broadband?state=${cleaned_state}&county=${cleaned_county}`
-            );
-            
-            const query = `State ${state} and county ${county}`;
-            // Handle different response codes using switch
-            switch(response.status) {
-              case 200: // Success
-                const loadJson = await response.json();
-                return `${county} county, ${state} broadband coverage is ${loadJson.data.percentage.toFixed(1)}%`;
-                
-              case 400: // Bad Request
-                const badRequestData = await response.json();
-                throw new Error(`Bad request: ${badRequestData.message}. Query: ${query}`);
-                
-              case 404: // Not Found
-                const notFoundData = await response.json();
-                throw new Error(`Bad request: ${notFoundData.message}. Query: ${query}`);
-                
-              case 500: // Internal Server Error
-                const errorData = await response.json();
-                throw new Error(`Server error: ${errorData.message}. Query: ${query}`);
-                
-              default:
-                throw new Error(`Unexpected response code: ${response.status}.  Query: ${query}`);
-            }
-        
-          } catch (error) {
-            if (error instanceof Error) {
-              throw error;
-            }
-            throw new Error("Error in fetch");
-          }
+export async function getBroadBand(state: string, county: string): Promise<string> {
+  try {
+    const cleanString = (input: string): string =>
+      input.replace(/\s+/g, "").toLowerCase();
+    const cleaned_state = cleanString(state);
+    const cleaned_county = cleanString(county);
+    const response = await fetch(
+      `http://localhost:3232/broadband?state=${cleaned_state}&county=${cleaned_county}`
+    );
+
+    const query = `State ${state} and county ${county}`;
+    // Handle different response codes using switch
+    switch (response.status) {
+      case 200: // Success
+        const loadJson = await response.json();
+        return `${county}, ${state} broadband coverage is ${loadJson.data.percentage.toFixed(
+          1
+        )}%`;
+
+      case 400: // Bad Request
+        const badRequestData = await response.json();
+        throw new Error(
+          `Bad request: ${badRequestData.message}. Query: ${query}`
+        );
+
+      case 404: // Not Found
+        const notFoundData = await response.json();
+        throw new Error(
+          `Bad request: ${notFoundData.message}. Query: ${query}`
+        );
+
+      case 500: // Internal Server Error
+        const errorData = await response.json();
+        throw new Error(`Server error: ${errorData.message}. Query: ${query}`);
+
+      default:
+        throw new Error(
+          `Unexpected response code: ${response.status}.  Query: ${query}`
+        );
     }
+  } catch (error) {
+    if (error instanceof Error) {
+      throw error;
+    }
+    throw new Error("Error in fetch");
+  }
+}

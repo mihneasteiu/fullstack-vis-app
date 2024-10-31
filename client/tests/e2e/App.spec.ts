@@ -1,14 +1,27 @@
 import { expect, test } from "@playwright/test";
+import { setupClerkTestingToken, clerk } from "@clerk/testing/playwright";
 
 // Configure the base setup for all tests
 test.beforeEach(async ({ page }) => {
+  setupClerkTestingToken({ page });
   await page.goto("http://localhost:8000/");
+  await clerk.loaded({ page });
+
+  await clerk.signIn({
+    page,
+    signInParams: {
+      strategy: "password",
+      password: process.env.E2E_CLERK_USER_PASSWORD!,
+      identifier: process.env.E2E_CLERK_USER_USERNAME!,
+    },
+  });
 });
 
 // Verify initial page state and core UI elements
 test("on page load, i see the dropdown and retrieve table button", async ({ page }) => {
   await expect(page.getByLabel("Select a data file", {exact: true})).toBeVisible();
   await expect(page.getByLabel("retrieve")).toBeVisible();
+  await expect(page.getByLabel("Retrieve broadband data")).toBeVisible();
 });
 
 // Comprehensive test for data display functionality across different datasets and view modes
@@ -365,4 +378,72 @@ test("user input keys work to select dataset and table type", async ({
   
   // Verify data display after keyboard navigation
   await expect(page.getByText("85413")).toBeVisible();
+});
+
+test("broadband data retrieval", async ({ page }) => {
+  await page.getByPlaceholder("Enter state").fill("Rhode Island");
+  await page.getByPlaceholder("Enter county").fill("Providence");
+  await page.getByLabel("Retrieve broadband data").click();
+  await expect(page.getByText("Providence, Rhode Island broadband coverage is 85.4%")).toBeVisible();
+
+  await page.getByPlaceholder("Enter state").fill("wrong state");
+  await page.getByPlaceholder("Enter county").fill("Providence");
+  await page.getByLabel("Retrieve broadband data").click();
+  await expect(page.getByText("Bad request: wrongstate not found in ACS api states. Query: State wrong state and county Providence")).toBeVisible();
+
+  await page.getByPlaceholder("Enter state").fill("Rhode Island");
+  await page.getByPlaceholder("Enter county").fill("wrong county");
+  await page.getByLabel("Retrieve broadband data").click();
+  await expect(page.getByText("Bad request: wrongcounty county does not exist in state. Query: State Rhode Island and county wrong county")).toBeVisible();
+});
+
+test("broadband and data retrieval integration", async ({page}) => {
+  await page
+    .getByLabel("Select a data file", { exact: true })
+    .selectOption("census/postsecondary_education.csv");
+  await page
+    .getByLabel("Select display mode", { exact: true })
+    .selectOption("Table");
+  await page.getByLabel("retrieve").click();
+  await expect(page.getByText("0.090909091")).toBeVisible();
+
+  await page.getByPlaceholder("Enter state").fill("Rhode Island");
+  await page.getByPlaceholder("Enter county").fill("Providence");
+  await page.getByLabel("Retrieve broadband data").click();
+  await expect(
+    page.getByText("Providence, Rhode Island broadband coverage is 85.4%")).toBeVisible();
+  await expect(page.getByText("0.090909091")).toBeVisible();
+
+  await page
+    .getByLabel("Select a data file", { exact: true })
+    .selectOption("Star Data");
+  await page
+    .getByLabel("Select display mode", { exact: true })
+    .selectOption("Table");
+  await page.getByLabel("retrieve").click();
+  await expect(page.getByText("Brown University")).not.toBeVisible();
+  await expect(page.getByText("0.090909091")).not.toBeVisible();
+  await expect(page.getByText("Andreas")).toBeVisible();
+  await expect(page.getByText("StarID")).toBeVisible();
+  await expect(page.getByText("-169.738")).toBeVisible();
+  await expect(
+    page.getByText("Providence, Rhode Island broadband coverage is 85.4%")
+  ).toBeVisible();
+})
+
+test("use broadband with keyboard", async ({page}) => {
+// Test keyboard navigation sequence
+await page.click("body");
+await expect(
+  page.getByText("Providence, Rhode Island broadband coverage is 85.4%")
+).not.toBeVisible();
+await page.keyboard.press("Tab");
+await page.keyboard.insertText("Rhode Island");
+await page.keyboard.press("Tab");
+await page.keyboard.insertText("Providence");
+await page.keyboard.press("Tab");
+await page.keyboard.press("Space");
+await expect(
+  page.getByText("Providence, Rhode Island broadband coverage is 85.4%")
+).toBeVisible();
 });
