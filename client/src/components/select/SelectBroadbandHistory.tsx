@@ -79,7 +79,7 @@ interface SelectBroadbandHistoryProps {
             switch(response.status) {
               case 200: // Success
                 const loadJson = await response.json();
-                return `${county} county, ${state} broadband coverage is ${loadJson.data.percentage}`;
+                return `${county} county, ${state} broadband coverage is ${loadJson.data.percentage.toFixed(1)}%`;
                 
               case 400: // Bad Request
                 const badRequestData = await response.json();
