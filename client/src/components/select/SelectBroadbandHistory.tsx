@@ -120,7 +120,7 @@ export async function getBroadBand(state: string, county: string): Promise<strin
     switch (response.status) {
       case 200: // Success
         const loadJson = await response.json();
-        return `${county}, ${state} broadband coverage is ${loadJson.data.percentage.toFixed(
+        return `${county} County, ${state} broadband coverage is ${loadJson.data.percentage.toFixed(
           1
         )}%`;
 

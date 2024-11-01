@@ -1,12 +1,16 @@
 import { expect, test } from "@playwright/test";
-import { setupClerkTestingToken, clerk } from "@clerk/testing/playwright";
+import { setupClerkTestingToken, clerk, clerkSetup } from "@clerk/testing/playwright";
 
 // Configure the base setup for all tests
 test.beforeEach(async ({ page }) => {
+  
+  await clerkSetup({
+    publishableKey: process.env.VITE_CLERK_PUBLISHABLE_KEY
+  });
   setupClerkTestingToken({ page });
   await page.goto("http://localhost:8000/");
   await clerk.loaded({ page });
-
+  await page.getByText('Sign In').click();
   await clerk.signIn({
     page,
     signInParams: {
