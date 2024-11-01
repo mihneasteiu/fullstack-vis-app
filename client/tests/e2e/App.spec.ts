@@ -1,16 +1,14 @@
-import { expect, test } from "@playwright/test";
+import { expect, test, type Page} from "@playwright/test";
 import { setupClerkTestingToken, clerk, clerkSetup } from "@clerk/testing/playwright";
 
 // Configure the base setup for all tests
 test.beforeEach(async ({ page }) => {
-  
-  await clerkSetup({
-    publishableKey: process.env.VITE_CLERK_PUBLISHABLE_KEY
+  setupClerkTestingToken({
+    page,
+    options: { frontendApiUrl: process.env.FRONTEND_API_URL},
   });
-  setupClerkTestingToken({ page });
   await page.goto("http://localhost:8000/");
-  await clerk.loaded({ page });
-  await page.getByText('Sign In').click();
+  await clerk.loaded({page});
   await clerk.signIn({
     page,
     signInParams: {
@@ -19,6 +17,11 @@ test.beforeEach(async ({ page }) => {
       identifier: process.env.E2E_CLERK_USER_USERNAME!,
     },
   });
+});
+
+test.afterEach(async ({ page }) => {
+  // Code to run after each test
+  await clerk.signOut({page})
 });
 
 // Verify initial page state and core UI elements
