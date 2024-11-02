@@ -16,26 +16,35 @@ interface SelectInputProps {
   setCounty: Dispatch<SetStateAction<string>>;
 }
 
+// Component for selecting state and county, with keyboard navigation support
 export function SelectBroadbandInput(props: SelectInputProps) {
+  // State for holding user input values for state and county
   const [stateInput, setStateInput] = useState<string>("");
-  const [countyInput, setCountyInput] = useState<string>(""); 
+  const [countyInput, setCountyInput] = useState<string>("");
+
+  // Refs for focusing elements and enabling keyboard navigation
   const stateRef = useRef<HTMLInputElement>(null);
   const countyRef = useRef<HTMLInputElement>(null);
   const submitRef = useRef<HTMLButtonElement>(null);
 
-  useKeyboardNav('state', stateRef, {
+  // Enable keyboard navigation for the state input field
+  useKeyboardNav("state", stateRef, {
     position: 0,
-  }
-  );
-  useKeyboardNav('county', countyRef, {
+  });
+
+  // Enable keyboard navigation for the county input field
+  useKeyboardNav("county", countyRef, {
     position: 1,
-  });  
-  useKeyboardNav('submit broadband', submitRef, {
+  });
+
+  // Enable keyboard navigation for the submit button with onClick handler
+  useKeyboardNav("submit broadband", submitRef, {
     position: 2,
     isSubmit: true,
-    onClick: handleSubmit
+    onClick: handleSubmit,
   });
-  
+
+  // Function to handle submission and update the parent component state
   function handleSubmit() {
     props.setState(stateInput);
     props.setCounty(countyInput);
@@ -43,6 +52,7 @@ export function SelectBroadbandInput(props: SelectInputProps) {
 
   return (
     <div>
+      {/* Input field for entering the state */}
       <input
         id="text-input"
         type="text"
@@ -54,6 +64,8 @@ export function SelectBroadbandInput(props: SelectInputProps) {
           setStateInput(event.target.value);
         }}
       />
+
+      {/* Input field for entering the county */}
       <input
         id="text-input"
         type="text"
@@ -65,11 +77,14 @@ export function SelectBroadbandInput(props: SelectInputProps) {
           setCountyInput(event.target.value);
         }}
       />
-      {/* Button to retrieve the selected data and display mode */}
-      <button ref={submitRef}
-      aria-label="Retrieve broadband data"
+
+      {/* Button to submit selected state and county values */}
+      <button
+        ref={submitRef}
+        aria-label="Retrieve broadband data"
         onClick={() => {
-          if (stateInput != "" && countyInput != "") {
+          // Check if inputs are non-empty before submission
+          if (stateInput !== "" && countyInput !== "") {
             handleSubmit();
           }
         }}

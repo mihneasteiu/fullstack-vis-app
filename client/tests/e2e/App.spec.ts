@@ -388,6 +388,7 @@ test("user input keys work to select dataset and table type", async ({
   await expect(page.getByText("85413")).toBeVisible();
 });
 
+//Tetsing broadband data retrieval with correct and wrong input
 test("broadband data retrieval", async ({ page }) => {
   await page.getByPlaceholder("Enter state").fill("Rhode Island");
   await page.getByPlaceholder("Enter county").fill("Providence");
@@ -405,6 +406,7 @@ test("broadband data retrieval", async ({ page }) => {
   await expect(page.getByText("Bad request: wrongcounty county does not exist in state. Query: State Rhode Island and county wrong county")).toBeVisible();
 });
 
+//Testing broadband retrieval and table data retrieval together
 test("broadband and data retrieval integration", async ({page}) => {
   await page
     .getByLabel("Select a data file", { exact: true })
@@ -436,6 +438,7 @@ test("broadband and data retrieval integration", async ({page}) => {
   await expect(page.getByText("Providence County, Rhode")).toBeVisible();
 })
 
+//Testing broadband data retrieval with keyboard shortcuts
 test("use broadband with keyboard", async ({page}) => {
 // Test keyboard navigation sequence
 await page.click("body");

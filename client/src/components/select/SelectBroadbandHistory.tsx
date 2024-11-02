@@ -46,25 +46,33 @@ interface SelectBroadbandHistoryProps {
 export function SelectBroadbandHistory(props: SelectBroadbandHistoryProps) {
   const state = props.state;
   const county = props.county;
+
+  // State to hold the fetched broadband result
   const [result, setResult] = useState<string | null>(null);
+  // State to track loading status
   const [loading, setLoading] = useState<boolean | null>(false);
+  // State to hold any error messages from fetch failures
   const [error, setError] = useState<string | null>(null);
 
+  // Effect hook to trigger data fetching when state or county changes
   useEffect(() => {
     if (state !== "" && county !== "") {
       const fetchBroadBandData = async () => {
         setLoading(true);
         setError(null);
         try {
+          // Fetch broadband data and update result
           const broadbandResult = await getBroadBand(state, county);
           setResult(broadbandResult);
         } catch (error) {
+          // Set error message if fetch fails
           if (error instanceof Error) {
             setError(error.message);
           } else {
             setError("Error in fetch");
           }
         } finally {
+          // Reset loading state
           setLoading(false);
         }
       };
@@ -72,12 +80,15 @@ export function SelectBroadbandHistory(props: SelectBroadbandHistoryProps) {
     }
   }, [state, county]);
 
+  // Display loading message while data is being fetched
   if (loading) {
     return <div>Data is loading...</div>;
   }
+  // Display error message if fetch failed
   if (error) {
     return <div>{error}</div>;
   }
+  // Display fetched broadband data if available
   return <div>{result}</div>;
 }
 
@@ -105,18 +116,28 @@ export function SelectBroadbandHistory(props: SelectBroadbandHistoryProps) {
  * }
  * ```
  */
-export async function getBroadBand(state: string, county: string): Promise<string> {
+export async function getBroadBand(
+  state: string,
+  county: string
+): Promise<string> {
   try {
+    // Function to clean input strings: removes spaces and converts to lowercase
     const cleanString = (input: string): string =>
       input.replace(/\s+/g, "").toLowerCase();
+
+    // Clean state and county inputs for use in the API request
     const cleaned_state = cleanString(state);
     const cleaned_county = cleanString(county);
+
+    // Fetch data from local API with cleaned parameters
     const response = await fetch(
       `http://localhost:3232/broadband?state=${cleaned_state}&county=${cleaned_county}`
     );
 
+    // Query information for error handling
     const query = `State ${state} and county ${county}`;
-    // Handle different response codes using switch
+
+    // Handle different response codes from API
     switch (response.status) {
       case 200: // Success
         const loadJson = await response.json();
@@ -141,11 +162,13 @@ export async function getBroadBand(state: string, county: string): Promise<strin
         throw new Error(`Server error: ${errorData.message}. Query: ${query}`);
 
       default:
+        // Throw an error for unexpected response codes
         throw new Error(
-          `Unexpected response code: ${response.status}.  Query: ${query}`
+          `Unexpected response code: ${response.status}. Query: ${query}`
         );
     }
   } catch (error) {
+    // Re-throw error if it's an Error object; otherwise, throw a generic error
     if (error instanceof Error) {
       throw error;
     }
